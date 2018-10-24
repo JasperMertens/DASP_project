@@ -3,10 +3,12 @@ speechfilename{2}= 'speech2.wav';
 noisefilename{1}= 'Babble_noise1.wav';
 noisefilename{2}= 'White_noise1.wav';
 m_length=10;
-n=2;
+
+[~, n, m]=size(RIR_sources);
+
 
 load('Computed_RIRs.mat')
-RIR_noise=zeros(1,n,1);
+RIR_noise=zeros(1,n,m);
 mic_samples=m_length*fs_RIR;
 [speech1_samples, fs_speech1] = audioread(speechfilename{1});
 %[speech2_samples, fs_speech2] = audioread(speechfilename{2});
@@ -21,13 +23,15 @@ noise1_samples = resample(noise1_samples,fs_RIR, fs_noise1);
 
 
 
-mic_speech_mat = zeros(mic_samples,n);
-mic_noise_mat = zeros(mic_samples,n);
+mic_speech_mat = zeros(mic_samples,n,m);
+mic_noise_mat = zeros(mic_samples,n,m);
 for i=1:n
-mic_speech=conv(RIR_sources(:,i,1),speech1_samples);
-mic_speech_mat(:,i)=mic_speech(1:mic_samples);
-mic_noise=conv(RIR_noise(:,i,1),noise1_samples);
-mic_noise_mat(:,i)=mic_noise(1:mic_samples);
+for j=1:m
+mic_speech=conv(RIR_sources(:,i,j),speech1_samples);
+mic_speech_mat(:,i,j)=mic_speech(1:mic_samples);
+mic_noise=conv(RIR_noise(:,i,j),noise1_samples);
+mic_noise_mat(:,i,j)=mic_noise(1:mic_samples);
+end
 end
 mic=mic_speech_mat+mic_noise_mat;
 save('mic','mic', 'fs_RIR');
