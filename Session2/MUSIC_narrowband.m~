@@ -1,0 +1,12 @@
+%create_micsigs
+[M, ~] = size(m_pos);
+L = 1024;
+F = 1000;
+
+s = zeros(M,F, 
+for i=1:M
+    s = spectrogram(mic(:,1),L,L/2,F);
+end
+figure
+spectrogram(mic(:,1),L,L/2,F);
+
