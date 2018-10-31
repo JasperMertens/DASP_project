@@ -1,4 +1,4 @@
-% create_micsigs_add
+create_micsigs_add
 [M, ~] = size(m_pos);
 [Q, ~] = size(s_pos);
 L = 1024;
@@ -13,20 +13,21 @@ end
 figure
 spectrogram(mic(:,1),L,L/2,L);
 
-
-freq = (2:L/2)*(fs_RIR/L);
+% freq = (2:L/2)*pi/(L/2);
+index = 2:L/2;
+rad_freq = (index-1)*pi/(size(s,2)-1);
 % Calculate the steering vector
 angles = (0:0.5:180)./180*pi;
 d = m_pos(1,2)*ones(M,1) - m_pos(1:M,2);
 c = 340;
 tau=d*cos(angles)*(fs_RIR/c);
 
-p=zeros(length(angles),length(freq));
+p=zeros(length(angles),length(rad_freq));
 % Autocorrelation matrix and eigenvectors
 s_freq = s(:,2:L/2,:);
 p_avg = zeros(length(angles),1);
-for f=1:length(freq)
-G = exp(-1j*freq(f)*tau);
+for f=1:length(rad_freq)
+G = exp(-1j*rad_freq(f)*tau);
 s_aux = squeeze(s_freq(:,f,:));
 R = s_aux*s_aux';
 [V,D] = eig(R);
