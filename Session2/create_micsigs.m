@@ -22,21 +22,16 @@ noise1_samples = resample(noise1_samples,fs_RIR, fs_noise1);
 %noise2_samples = resample(noise2_samples,fs_RIR, fs_noise2);
 
 
-
-
 mic_speech_mat = zeros(mic_samples,n,m);
 mic_noise_mat = zeros(mic_samples,n,m);
-shift_vec = zeros(1,m);
 for i=1:n
     for j=1:m
         mic_speech=fftfilt(RIR_sources(:,i,j), speech1_samples);
         mic_speech_mat(:,i,j)=mic_speech(1:mic_samples);
-        shift_vec(j) = find(mic_speech > 10^-5,1);
         mic_noise=fftfilt(RIR_noise(:,i,j), noise1_samples);
         mic_noise_mat(:,i,j)=mic_noise(1:mic_samples);
     end
 end
 
-shift = max(shift_vec);
 mic=mic_speech_mat+mic_noise_mat;
 save('mic','mic', 'fs_RIR');

@@ -19,8 +19,6 @@ s_power = abs(s).^2;
 s_avg_pow = mean(mean(s_power,3),1);
 [mx, index] = max(s_avg_pow);
 rad_freq = (index-1)*pi/(length(s_avg_pow)-1);
-% freq=(index/(pi*length(s_avg_pow)))*fs_RIR/2;
-% rad_freq = 2*pi*freq;
 
 % Calculate the steering vector
 angles = (0:0.5:180)./180*pi;
@@ -37,14 +35,13 @@ E = V(:,1:M-Q);
 p = 1./diag(G'*E*E'*G);
 
 % DOA estimation
-figure
-plot(0:0.5:180,abs(p))
-% hold on
-% stem([DOA_est DOA_est],[0 500],'r')
-
 [pks,locs] = findpeaks(abs(p),0:0.5:180);
 [sorted_pks, index_vec] = sort(pks,'descend');
 sorted_locs = locs(index_vec);
 DOA_est = sorted_locs(1:Q);
+figure
+plot(0:0.5:180,abs(p))
+hold on
+stem(DOA_est,sorted_pks(1:Q))
 save('DOA_est.mat', 'DOA_est');
 
