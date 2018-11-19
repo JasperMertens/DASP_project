@@ -10,9 +10,11 @@ D_est = round(cos(theta)*(fs_RIR*d)/c);
 shifted_mic = zeros(size(mic));
 shifted_speech = zeros(size(mic));
 shifted_babble = zeros(size(mic));
+shifted_noise = zeros(size(mic));
 DAS_out=zeros(mic_samples,1);
 DAS_speech=zeros(mic_samples,1);
 DAS_babble=zeros(mic_samples,1);
+DAS_noise=zeros(mic_samples,1);
 for i=1:n
     shift = max(D_est)-D_est(i)+1;
     shifted_mic(:,i) = [mic(shift:end,i)' zeros(1,shift-1)]';
@@ -21,14 +23,17 @@ for i=1:n
     DAS_speech = DAS_speech + shifted_speech(:,i);
     shifted_babble(:,i) = [babble(shift:end,i)' zeros(1,shift-1)]';
     DAS_babble = DAS_babble + shifted_babble(:,i);
+    shifted_noise(:,i) = [noise(shift:end,i)' zeros(1,shift-1)]';
+    DAS_noise = DAS_noise + shifted_noise(:,i);
 end
 error=max(abs(DAS_out-(DAS_speech+DAS_babble)));
 DAS_out=DAS_out/n;
 DAS_speech=DAS_speech/n;
 DAS_babble=DAS_babble/n;
+DAS_noise=DAS_noise/n;
 VAD1=abs(DAS_speech)>std(DAS_speech)*1e-3;
 pow_DAS_speech = var(DAS_speech(VAD1==1,1));
-SNR_out_DAS=10*log10(pow_DAS_speech./var(DAS_babble));
+SNR_out_DAS=10*log10(pow_DAS_speech./(var(DAS_babble) + var(DAS_noise)));
 figure
 plot(mic(:,1),'b')
 hold on
